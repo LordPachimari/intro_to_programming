@@ -1,12 +1,7 @@
 # Name: Thien Nguyen Vanovich
 # Student id: s3886505
-# Attempted PASS, CREDIT level.
-# Submission 2
-
-# In DI level, question 7, list of orders can have multiple orders made by the same customer with the identical products.
-# This requires checking whether orders have identical product made by the same customer, and then combine the quantities made.
-# Product name in the orders can be name or ID. Therefore, for each order where the product name is name, we have to convert the name into ID, to create a table as in the example.
-# Additionaly, orders can have a customer ID, so we have to convert customer id to name
+# Attempted PASS, CREDIT, DI levels.
+# Submission 3
 
 
 class Customer:
@@ -87,7 +82,7 @@ class Records:
             line = line.rstrip()
             line = line.translate(line.maketrans('', '', ","))
             splittedLine = line.split()
-            if len(splittedLine) ==0:
+            if len(splittedLine) == 0:
                 continue
             if (splittedLine[2].lower() == "r"):
                 customer = RetailCustomer(
@@ -100,26 +95,25 @@ class Records:
     def readProducts(self):
         fhand = open('products.txt')
         for line in fhand:
-            
+
             # for each line create product or combo object and add them to'products' or 'combos' list
             line = line.rstrip()
 
             line = line.translate(line.maketrans('', '', ','))
             splittedLine = line.split()
-            if len(splittedLine) ==0:
+            if len(splittedLine) == 0:
                 continue
             if splittedLine[0].startswith('P'):
                 product = Product(
                     splittedLine[0], splittedLine[1], float(splittedLine[2]), int(splittedLine[3]))
                 self.products.append(product)
             else:
-                # in the combo data, we count duplicated products and store the count under the product name using a dictionary
+                # in the combo data, we count duplicated products and store the count under the product name key using a dictionary
                 d = dict()
                 for i in range(2, len(splittedLine)-1, 1):
                     d[splittedLine[i]] = d.get(splittedLine[i], 0)+1
                 combo = Combo(
-                    splittedLine[0], splittedLine[1], d, splittedLine[len(splittedLine)-1])
-                print('combooooooo', d)
+                    splittedLine[0], splittedLine[1], d, int(splittedLine[len(splittedLine)-1]))
                 self.products.append(combo)
 
     def readOrders(self):
@@ -129,10 +123,10 @@ class Records:
             line = line.rstrip()
             line = line.translate(line.maketrans('', '', ','))
             splittedLine = line.split()
-            if len(splittedLine) ==0:
+            if len(splittedLine) == 0:
                 continue
-            d=dict()
-            d[splittedLine[1]]=int(splittedLine[2])
+            d = dict()
+            d[splittedLine[1]] = int(splittedLine[2])
             # if an order has comments
 
             if len(splittedLine) > 3:
@@ -208,7 +202,7 @@ class RetailCustomer(Customer):
         print(self.ID, self.name)
 
     def setRate(self, rate):
-        self.discountRate = rate/100
+        self.discount = rate/100
 
 
 class WholesaleCustomer(Customer):
@@ -228,7 +222,8 @@ class WholesaleCustomer(Customer):
             return totalDiscount
 
     def setRate(self, rate):
-        self.discountRate = rate/100
+
+        self.discount = rate/100
 
     def setThreshold(self, threshold):
         self.threshold = threshold
@@ -258,30 +253,28 @@ def menu(records):
 
     print('')
     print('======== MENU ========')
-    print('')
     print('Here is the list of our customers!')
     records.listCustomers()
     print('Here is the list of our products!')
     records.listProducts()
+    print('')
     print("To make an order type -- 'order'")
     print("To list all orders type -- 'orders'")
     print("To change discount rate for a customer type -- 'rate'")
-    print("To cange threshold for a customer type -- 'threshold'")
-
+    print("To cange threshold for a wholesale customer type -- 'threshold'")
     print("To exit the program type -- 'exit'")
     print('')
-
     action = input("Type your action... ").lower().strip()
     while action != "order" and action != "exit" and action != "rate" and action != "threshold" and action != "orders":
         action = input("Please type an appropriate action ")
     if action == "order":
         return order(records)
     elif action == "rate":
-        return setRate(records)
+        return Rate(records)
     elif action == "threshold":
         return setThreshold(records)
     elif action == "orders":
-        return orders(records)
+        return listOrders(records)
     elif action == "exit":
         print("Thanks for using our service!")
         return
@@ -308,54 +301,54 @@ def order(records):
 
     # storing product name and the quantity in dictionary
     d = dict()
-# try:
-    for i in range(0, len(products)-1, 2):
-        # checking whether the quantity input is correct and whether the product exists
-        productRecord = records.findProduct(products[i])
-        if int(products[i+1]) <= 0 or productRecord == None:
-            _input = input(
-                'Incorrect product name or quantity, would you like to continue? (Y/N)')
-            if _input.lower() == "y":
-                return order(records)
-            else:
-                return menu(records)
-        # checking whether the price is negative for the product
-        price = productRecord.getPrice()
-        if price < 0:
-            _input = input(
-                'Incorrect product name or quantity, would you like to continue? (Y/N)')
-            if _input.lower() == "y":
-                return order(records)
-            else:
-                return menu(records)
-        # checking whether the quantity ordered is not above available stock
-        stock = productRecord.getStock()
-        if stock < int(products[i+1]):
-            _input = input(
-                'Not enough stock for one of the products. Please check our menu for the amount of stock available for the product. Would you like to continue? (Y/N)')
-            if _input.lower() == "y":
-                return order(records)
-            else:
-                return menu(records)
-        d[products[i]] = int(products[i+1])
-        if member == None and price == 0:
-            _input = input(
-                'Sorry, no free items for new customers, would you like to make a new order? (Y/N)')
-            if _input.lower() == "y":
-                return order(records)
-            else:
-                return menu(records)
 
+    try:
+        for i in range(0, len(products)-1, 2):
+            # checking whether the quantity input is correct and whether the product exists
+            productRecord = records.findProduct(products[i])
+            if int(products[i+1]) <= 0 or productRecord == None:
+                _input = input(
+                    'Incorrect product name or quantity, would you like to continue? (Y/N)')
+                if _input.lower() == "y":
+                    return order(records)
+                else:
+                    return menu(records)
+            # checking whether the price is negative for the product
+            price = productRecord.getPrice()
+            if price < 0:
+                _input = input(
+                    'Incorrect product name or quantity, would you like to continue? (Y/N)')
+                if _input.lower() == "y":
+                    return order(records)
+                else:
+                    return menu(records)
+            # checking whether the quantity ordered is not above available stock
+            stock = int(productRecord.getStock())
+            if stock < int(products[i+1]):
+                _input = input(
+                    'Not enough stock for one of the products. Please check our menu for the amount of stock available for the product. Would you like to continue? (Y/N)')
+                if _input.lower() == "y":
+                    return order(records)
+                else:
+                    return menu(records)
+            d[products[i]] = int(products[i+1])
+            if member == None and price == 0:
+                _input = input(
+                    'Sorry, no free items for new customers, would you like to make a new order? (Y/N)')
+                if _input.lower() == "y":
+                    return order(records)
+                else:
+                    return menu(records)
+
+    except:
+        _input = input(
+            'Incorrect product name or quantity, would you like to continue? (Y/N)')
+        if _input.lower() == "y":
+            return order(records)
+        else:
+            return menu(records)
     print(customer, ' purchased ')
     totalPrice = 0
-    # except:
-    #     _input = input(
-    #         'Incorrect product name or quantity, would you like to continue? (Y/N)')
-    #     if _input.lower() == "y":
-    #         return order(records)
-    #     else:
-    #         return menu(records)
-        
 
     for product in list(d):
         quantity = int(d[product])
@@ -373,7 +366,7 @@ def order(records):
     if member is None:
         print('Total price ',  totalPrice)
         newID = "C"+str(len(records.customers)+69)
-    
+
         new_order = Order(newID, d)
         records.addNewOrder(new_order)
         newCustomer = RetailCustomer(
@@ -384,10 +377,14 @@ def order(records):
         print('Total price ', totalPrice)
         new_order = Order(member.ID, d)
         records.addNewOrder(new_order)
-    return menu(records)
+    inp = input("Would you like to make a new order? (Y/N)")
+    if inp.lower() == "y":
+        return order(records)
+    else:
+        return menu(records)
 
 
-def setRate(records):
+def Rate(records):
     customer = input('Enter customer name or ID: ')
     while customer == "":
         customer = input('Enter customer name or ID: ')
@@ -397,31 +394,35 @@ def setRate(records):
         inp = input(
             'No customers found. Would you like to change customer name or ID? (Y/N)')
         if inp.lower() == "y":
-            return setRate(records)
+            return Rate(records)
         else:
             return menu(records)
 
     rate = input('Enter new discount rate for the customer: ')
     while rate == "":
-        customer = input('Enter new discount rate for the customer ')
+        rate = input('Enter new discount rate for the customer ')
     try:
         _rate = int(rate)
         if _rate < 0:
             inp = input(
                 'Please, enter an appropriate discount rate. Would you like to repeat? (Y/N)')
             if inp.lower() == "y":
-                return setRate(records)
+                return Rate(records)
             else:
                 return menu(records)
 
         member.setRate(_rate)
-        print('checking whether the rate changed in the original object',
-              records.findCustomer(customer).getDiscount(1000))
+        next = input("Rate for has successfully changed!. Go to menu? (Y/N)")
+        if next.lower() == "y":
+            return menu(records)
+        else:
+            print("Thanks for using our service")
+            return
 
     except:
         inp = input('Invalid input. Would you like to continue? (Y/N)')
         if inp.lower() == "y":
-            return setRate(records)
+            return Rate(records)
         else:
             return menu(records)
 
@@ -449,7 +450,7 @@ def setThreshold(records):
             return menu(records)
     threshold = input('Enter new threshold for the customer: ')
     while threshold == "":
-        customer = input('Enter new threshold for the customer ')
+        threshold = input('Enter new threshold for the customer ')
     try:
         _threshold = int(threshold)
         if _threshold < 0:
@@ -461,8 +462,12 @@ def setThreshold(records):
                 return menu(records)
 
         member.setThreshold(_threshold)
-        print('checking whether the threshold changed in the original object',
-              records.findCustomer(customer).threshold)
+        next = input("Threshold has successfully changed!. Go to menu? (Y/N)")
+        if next.lower() == "y":
+            return menu(records)
+        else:
+            print("Thanks for using our service")
+            return
 
     except:
         inp = input('Invalid input. Would you like to continue? (Y/N)')
@@ -471,8 +476,14 @@ def setThreshold(records):
         else:
             return menu(records)
 
+# DI level, question 7
+# list of orders can have multiple orders made by the same customer with the identical products. This requires checking whether orders have identical product made by the same customer, and then combine the quantities made.
+# Products in orders are stored in a dictionary, which adds more complexity to the code.
+# Product name in the orders can be name or ID. Therefore, for each order where the product name is name, we have to convert the name into ID, to create a table as in the example.
+# Additionaly, customer name can be name or ID, so we have to convert customer id to name, to create a table as in the example.
 
-def orders(records):
+
+def listOrders(records):
 
     product_ids = []
     customer_names = []
@@ -484,20 +495,20 @@ def orders(records):
     for customer in customers:
         customer_names.append(customer.name)
 
-    # We will store all the orders made by each customer in the list. Orders are dicitonaries, where product name is a key and quantity is a value
+    # We will store all the orders made by each customer in the list. Orders made by each customer are dicitonaries, where product name is a key and quantity is a value
     filtered_orders = []
     for name in customer_names:
-        # Storing orders product and quantity in a dictionary
+        # Storing orders' product and quantity in a dictionary
         customer_orders = dict()
         for order in orders:
-            #Note: customer have name or ID
-            if order.customer == name or records.findCustomer(order.customer).getName() ==name:
-                # Reminder: each order may have multiple products that are stored in dictionary, where product name is a key and quantity is a value
+            # Note: customer can have name or ID
+            if order.customer == name or records.findCustomer(order.customer).getName() == name:
                 products = order.getProducts()
                 for product in list(products):
-                    if (product.startswith('P') and product[1].isnumeric()) or product.startswith('COM'): 
+                    if (product.startswith('P') and product[1].isnumeric()) or product.startswith('COM'):
                         customer_orders[product] = customer_orders.get(
                             product, 0) + products[product]
+                    # if product name is name, we store it as ID
                     else:
                         productID = records.findProduct(product).getID()
                         customer_orders[productID] = customer_orders.get(
@@ -506,47 +517,43 @@ def orders(records):
                 continue
         filtered_orders.append(customer_orders)
     print('{:<8}'.format("   "), end='')
+
+    # Printing a row of product ids for the table view
     for i in range(len(product_ids)):
-        if i==len(product_ids)-1:
+        if i == len(product_ids)-1:
             print('{:<8}'.format(product_ids[i]))
             continue
         print('{:<8}'.format(product_ids[i]), end='')
-    for i in range(len(filtered_orders)): 
-   
-      
+
+    # Printing orders for each customer
+    for i in range(len(filtered_orders)):
         print('{:<8}'.format(customer_names[i]), end='')
         for z in range(len(product_ids)):
             quantity = -1
 
             for product in list(filtered_orders[i]):
-                if z==len(product_ids)-1 and product == product_ids[z]:
-                    quantity +=999
-                    print('{:<8}'.format(filtered_orders[i][product])) 
+                if z == len(product_ids)-1 and product == product_ids[z]:
+                    quantity += 2
+                    print('{:<8}'.format(filtered_orders[i][product]))
                     break
 
                 elif product == product_ids[z]:
-                    quantity +=999
+                    quantity += 2
                     print('{:<8}'.format(filtered_orders[i][product]), end='')
                     break
                 continue
-            if quantity<0 and z==len(product_ids)-1:
+            if quantity < 0 and z == len(product_ids)-1:
                 print('{:<8}'.format('0'))
                 continue
-            elif quantity<0:
+            elif quantity < 0:
                 print('{:<8}'.format('0'), end='')
                 continue
     inp = input('Go to menu?(Y/N)')
-    if inp.lower()=='y':
+    if inp.lower() == 'y':
         return menu(records)
     else:
         print('Thanks for using our service!')
         return
-
-        
-                    
-
-
-
 
 
 def main():
