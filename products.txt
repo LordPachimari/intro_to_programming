@@ -1,0 +1,5 @@
+P1, Wine,      10.0,  50
+P2, Chocolate, 5.00,  100
+P3, Candle,    1,     1000
+P4, Flower,    -1,    15
+COM1, ChristmasPack, P1, P2, P2, P3, P3, P3, 10
