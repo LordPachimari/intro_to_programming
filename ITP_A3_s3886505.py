@@ -476,22 +476,6 @@ def Rate(records):
         rate = input('Enter new discount rate for the customer: ').rstrip()
     try:
         _rate = int(rate)
-        if _rate < 0:
-            inp = input(
-                'Please, enter an appropriate discount rate. Would you like to repeat? (Y/N)')
-            if inp.lower() == "y":
-                return Rate(records)
-            else:
-                return menu(records)
-
-        member.setRate(_rate)
-        next = input("Rate has successfully changed!. Go to menu? (Y/N)")
-        if next.lower() == "y":
-            return menu(records)
-        else:
-            print("Thanks for using our service")
-            writeFiles(records)
-            return
 
     except:
         inp = input('Invalid input. Would you like to continue? (Y/N)')
@@ -499,6 +483,22 @@ def Rate(records):
             return Rate(records)
         else:
             return menu(records)
+    if _rate < 0:
+        inp = input(
+            'Please, enter an appropriate discount rate. Would you like to repeat? (Y/N)')
+        if inp.lower() == "y":
+            return Rate(records)
+        else:
+            return menu(records)
+
+    member.setRate(_rate)
+    next = input("Rate has successfully changed!. Go to menu? (Y/N)")
+    if next.lower() == "y":
+        return menu(records)
+    else:
+        print("Thanks for using our service")
+        writeFiles(records)
+        return
 
 
 def setThreshold(records):
@@ -527,22 +527,6 @@ def setThreshold(records):
         threshold = input('Enter new threshold for the customer: ').rstrip()
     try:
         _threshold = int(threshold)
-        if _threshold < 0:
-            inp = input(
-                'Please, enter an appropriate threshold. Would you like to repeat? (Y/N)')
-            if inp.lower() == "y":
-                return setThreshold(records)
-            else:
-                return menu(records)
-
-        member.setThreshold(_threshold)
-        next = input("Threshold has successfully changed!. Go to menu? (Y/N)")
-        if next.lower() == "y":
-            return menu(records)
-        else:
-            print("Thanks for using our service")
-            writeFiles(records)
-            return
 
     except:
         inp = input('Invalid input. Would you like to continue? (Y/N)')
@@ -550,6 +534,22 @@ def setThreshold(records):
             return setThreshold(records)
         else:
             return menu(records)
+    if _threshold < 0:
+        inp = input(
+            'Please, enter an appropriate threshold. Would you like to repeat? (Y/N)')
+        if inp.lower() == "y":
+            return setThreshold(records)
+        else:
+            return menu(records)
+
+    member.setThreshold(_threshold)
+    next = input("Threshold has successfully changed!. Go to menu? (Y/N)")
+    if next.lower() == "y":
+        return menu(records)
+    else:
+        print("Thanks for using our service")
+        writeFiles(records)
+        return
 
 
 def listOrders(records):
@@ -692,7 +692,6 @@ def Replenish(records):
     try:
         records.replenish(inp)
         print("The stock of ", inp, " has successfully set for all the products")
-        return menu(records)
 
     except:
         next = input('Incorrect input. Would you like to do it again? (Y/N)')
@@ -700,6 +699,8 @@ def Replenish(records):
             return Replenish(records)
         else:
             return menu(records)
+
+    return menu(records)
 
 
 def writeFiles(records):
@@ -736,17 +737,17 @@ def main():
     if len(inp) == 1:
         print("Please, provide two arguments")
         return main()
-    # try:
-    if len(inp) == 0:
-        records.readCustomers('customers.txt')
-        records.readProducts('products.txt')
-    else:
-        records.readCustomers(inp[0])
-        records.readProducts(inp[1])
+    try:
+        if len(inp) == 0:
+            records.readCustomers('customers.txt')
+            records.readProducts('products.txt')
+        else:
+            records.readCustomers(inp[0])
+            records.readProducts(inp[1])
 
-    # except:
-    #     print('Incorrect input or files could not be opened:')
-    #     return main()
+    except:
+        print('Incorrect input or files could not be opened:')
+        return main()
     return menu(records)
 
 
