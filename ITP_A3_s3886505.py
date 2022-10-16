@@ -201,7 +201,7 @@ class Records:
         for customer in self.customers:
             totalCustomerValue = 0
             customer_total = customer.getTotal()
-            if customer_total < total_value:
+            if customer_total > total_value:
                 total_value = totalCustomerValue
                 mostValuableCustomer = customer.name
 
