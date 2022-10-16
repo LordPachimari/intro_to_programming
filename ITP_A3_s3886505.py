@@ -165,7 +165,47 @@ class Records:
     def changeStock(self, productName, quantity):
 
         self.findProduct(productName).stock -= quantity
+    
+    def replenish(self, stock):
+        for product in self.products:
+            if product.stock > int(stock):
+                continue
+            product.stock = stock
+        
+    def mostValuableCustomer(self):
+        total_value = 0
+        mostValuableCustomer = ''
 
+        for customer in self.customers:
+            totalCustomerValue = 0
+            for order in self.orders:
+                if order.customer ==customer.ID or order.customer == customer.name:
+                    #for each product key sum up its quantity value
+                    for product in list(order.products):
+                        totalCustomerValue +=order.products[product]
+            if total_value<totalCustomerValue:
+                total_value = totalCustomerValue
+                mostValuableCustomer+=customer.name
+
+        return mostValuableCustomer
+
+    def mostPopularProduct(self):
+        total_count = 0 
+        mostPopularProduct =''
+        #for each product count how many time it appears in orders
+        for product in self.products:
+            product_count = 0
+            for order in self.orders:
+                for order_product in list(order.products):
+                    if order_product == product.ID or order_product ==product.name:
+                        product_count+=1
+            if total_count<product_count:
+                total_count = product_count
+                mostPopularProduct+=product.name
+        return mostPopularProduct
+                
+
+                    
 
 class RetailCustomer(Customer):
 
@@ -239,10 +279,13 @@ def menu(records):
     print("To list all orders type -- 'orders'")
     print("To change discount rate for a customer type -- 'rate'")
     print("To cange threshold for a wholesale customer type -- 'threshold'")
+    print("To change replenish type -- 'replenish'")
+    print("To view our most valuable customer type -- 'MVC'")
+    print("To view our most valuable product type -- 'MPP'")
     print("To exit the program type -- 'exit'")
     print('')
     action = input("Type your action... ").lower().strip()
-    while action != "order" and action != "exit" and action != "rate" and action != "threshold" and action != "orders":
+    while action != "order" and action != "exit" and action != "rate" and action != "threshold" and action != "orders" and action!="replenish" and action!='mvc' and action!='mpp':
         action = input("Please type an appropriate action ")
     if action == "order":
         return _order(records)
@@ -252,6 +295,24 @@ def menu(records):
         return setThreshold(records)
     elif action == "orders":
         return listOrders(records)
+    elif action =="replenish":
+        return Replenish(records)
+    elif action =="mvc":
+        customer_name = records.mostValuableCustomer()
+        print("Our most valuable customer is ", customer_name)
+        inp = input('Go to menu?(Y/N)')
+        if inp.lower()=="y":
+            return menu(records)
+        else:
+            print("Bye! Thanks for using our service!")
+    elif action =='mpp':
+        product_name = records.mostPopularProduct()
+        print("Our most popular product is ", product_name)
+        inp = input('Go to menu?(Y/N)')
+        if inp.lower()=="y":
+            return menu(records)
+        else:
+            print("Bye! Thanks for using our service!")
     elif action == "exit":
         print("Thanks for using our service!")
         return
@@ -454,87 +515,139 @@ def setThreshold(records):
         if inp.lower() == "y":
             return setThreshold(records)
         else:
-            return menu(records)
-
-# DI level, question 7
-# list of orders can have multiple orders made by the same customer with the identical products. This requires checking whether orders have identical product made by the same customer, and then combine the quantities made.
-# Products in orders are stored in a dictionary, which adds more complexity to the code. Dictionary was choosen as an order can have muptiple products.
-# Product name in the orders can be name or ID. Therefore, for each order where the product name is name, we have to convert the name into ID, to create a table like in the example.
-# Additionaly, customer name can be name or ID, so we have to convert customer id to name, to create a table like in the example.
-
+            return menu(records)    
 
 def listOrders(records):
 
-    product_ids = []
-    customer_names = []
+
     products = records.getProducts()
     customers = records.getCustomers()
     orders = records.getOrders()
-    for product in products:
-        product_ids.append(product.ID)
-    for customer in customers:
-        customer_names.append(customer.name)
 
     # We will store all the orders made by each customer in the list 'filtered_orders'. Orders are dicitonaries, where product name is a key and quantity is a value
     filtered_orders = []
-    for name in customer_names:
+    for customer in customers:
         # Storing orders' product and quantity in a dictionary
         customer_orders = dict()
         for order in orders:
             # Note: customer can have name or ID
-            if order.customer == name or records.findCustomer(order.customer).getName() == name:
-                products = order.getProducts()
-                for product in list(products):
+            if order.customer == customer.name or order.customer ==customer.ID:
+                order_products = order.getProducts()
+                for product in list(order_products):
                     if (product.startswith('P') and product[1].isnumeric()) or product.startswith('COM'):
                         customer_orders[product] = customer_orders.get(
-                            product, 0) + products[product]
+                            product, 0) + order_products[product]
                     # if product name is name, we store it as ID
                     else:
                         productID = records.findProduct(product).getID()
                         customer_orders[productID] = customer_orders.get(
-                            productID, 0) + products[product]
+                            productID, 0) + order_products[product]
             else:
                 continue
         filtered_orders.append(customer_orders)
 
     # Printing a row of product ids for the table view
-    print('{:<8}'.format("   "), end='')
-    for i in range(len(product_ids)):
-        if i == len(product_ids)-1:
-            print('{:<8}'.format(product_ids[i]))
+    print('{:<13}'.format("   "), end='')
+    for i in range(len(products)):
+        if i == len(products)-1:
+            print('{:<8}'.format(products[i].ID))
             continue
-        print('{:<8}'.format(product_ids[i]), end='')
+        print('{:<8}'.format(products[i].ID), end='')
 
     # Printing orders for each customer
     for i in range(len(filtered_orders)):
-        print('{:<8}'.format(customer_names[i]), end='')
-        for z in range(len(product_ids)):
+        print('{:<13}'.format(customers[i].name), end='')
+        for z in range(len(products)):
             found = -1
             for product in list(filtered_orders[i]):
-                if z == len(product_ids)-1 and product == product_ids[z]:
+                if z == len(products)-1 and product == products[z].ID:
                     found += 2
                     print('{:<8}'.format(filtered_orders[i][product]))
                     break
 
-                elif product == product_ids[z]:
+                elif product == products[z].ID:
                     found += 2
                     print('{:<8}'.format(filtered_orders[i][product]), end='')
                     break
 
                 continue
-            if found < 0 and z == len(product_ids)-1:
+            if found < 0 and z == len(products)-1:
                 print('{:<8}'.format('0'))
                 continue
             elif found < 0:
                 print('{:<8}'.format('0'), end='')
                 continue
+    print("-----------------------------------------------------------------")
+    #Counting each product occurence in every order, and store the count in the list
+    products_count = []
+    total_count = 0
+    for product in products:
+        product_count = 0
+        for order in orders:
+            for order_product in list(order.products):
+                if order_product == product.ID or order_product == product.name:
+                    product_count+=1
+        products_count.append(product_count)
+        total_count+=product_count
+    # Printing counts for each product
+    print('{:<13}'.format('OrderNum'), end='')
+    for count in products_count:
+            print('{:<8}'.format(count),end='')
+    print('{:<8}'.format(total_count))
+
+    #Estimating order quantity and store the quantities in the list
+    orderQty = []
+    totalQty = 0
+    for i in range(len(products)):
+        productTotalQty = 0
+        for filtered_order in filtered_orders:
+            if len(filtered_order) ==0:
+                continue
+            skip = 1
+            for product in list(filtered_order):
+                if product == products[i].ID:
+                    skip-=2
+            #if skip is positive then we skip the order, as it does not have the product that we are looking for
+            if skip>0:
+                continue         
+            productQty = filtered_order[products[i].ID]
+
+            productTotalQty+=productQty
+            
+        orderQty.append(productTotalQty)
+        totalQty+=productTotalQty
+    #printing total quantities for each product
+    print('{:<13}'.format('OrderQty'), end='')
+    for qty in orderQty:
+        print('{:<8}'.format(qty),end='')
+    print('{:<8}'.format(totalQty)) 
+
+        
+
+
+
     inp = input('Go to menu?(Y/N)')
     if inp.lower() == 'y':
         return menu(records)
     else:
         print('Thanks for using our service!')
         return
+def Replenish(records):
+    inp = input('Please enter the stock amount ')
+    while inp=="":
+        inp = input('Please enter the stock amount ')
+    try:
+        records.replenish(inp)
+        print("The stock of ", inp, " has successfully set for all the products")
+        menu(records)
 
+
+    except:
+        next = input('Incorrect input. Would you like to do it again? (Y/N)')
+        if next.lower() =="y":
+            return Replenish(records)
+        else:
+            return menu(records)
 
 def main():
 
