@@ -1,6 +1,6 @@
-P1   ,   Wine ,   10.0 ,   6    
-P2   ,   Chocolate,   5.0  ,   90   
-P3   ,   Candle,   1.0  ,   98   
-P4   ,   Flower,   -1.0 ,   15   
-COM1 ,    ChristmasPack,  P1   ,    P2   ,    P2   ,    P3   ,    P3   ,    P3   ,    8    
-COM2 ,    SummerPack,  P1   ,    P1   ,    P1   ,    P3   ,    P3   ,    20   
+P1   ,   Wine ,   10.0 ,   975  
+P2   ,   Chocolate,   5.0  ,   989  
+P3   ,   Candle,   1.0  ,   83   
+P4   ,   Flower,   -1.0 ,   999  
+COM1 ,    ChristmasPack,  P1   ,    P2   ,    P2   ,    P3   ,    P3   ,    P3   ,    998  
+COM2 ,    SummerPack,  P1   ,    P1   ,    P1   ,    P3   ,    P3   ,    999  

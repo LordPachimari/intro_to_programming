@@ -475,7 +475,7 @@ def Rate(records):
     while rate == "":
         rate = input('Enter new discount rate for the customer: ').rstrip()
     try:
-        _rate = int(rate)
+        _rate = float(rate)
 
     except:
         inp = input('Invalid input. Would you like to continue? (Y/N)')
@@ -690,7 +690,8 @@ def Replenish(records):
     while inp == "":
         inp = input('Please enter the stock amount: ').rstrip()
     try:
-        records.replenish(inp)
+
+        records.replenish(int(inp))
         print("The stock of ", inp, " has successfully set for all the products")
 
     except:
