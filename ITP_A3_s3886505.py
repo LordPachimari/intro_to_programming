@@ -31,7 +31,7 @@ class Customer:
         return self.total
 
     def setTotal(self, total):
-        self.total += total
+        self.total = round(self.total+total, 2)
 
 
 class Product:
