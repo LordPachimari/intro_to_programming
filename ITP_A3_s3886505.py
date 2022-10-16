@@ -692,7 +692,7 @@ def Replenish(records):
     try:
         records.replenish(inp)
         print("The stock of ", inp, " has successfully set for all the products")
-        menu(records)
+        return menu(records)
 
     except:
         next = input('Incorrect input. Would you like to do it again? (Y/N)')
@@ -747,7 +747,7 @@ def main():
     # except:
     #     print('Incorrect input or files could not be opened:')
     #     return main()
-    menu(records)
+    return menu(records)
 
 
 main()
