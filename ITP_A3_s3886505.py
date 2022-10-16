@@ -126,7 +126,6 @@ class Records:
             if len(splittedLine) == 0:
                 continue
             if splittedLine[0].startswith('P'):
-                print("splittedline", splittedLine)
                 product = Product(
                     splittedLine[0], splittedLine[1], float(splittedLine[2]), int(splittedLine[3]))
                 self.products.append(product)
