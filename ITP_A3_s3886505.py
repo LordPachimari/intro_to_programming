@@ -200,12 +200,8 @@ class Records:
 
         for customer in self.customers:
             totalCustomerValue = 0
-            for order in self.orders:
-                if order.customer == customer.getID() or order.customer == customer.getName():
-                    # for each product key sum up its quantity value
-                    for product in list(order.products):
-                        totalCustomerValue += order.products[product]
-            if total_value < totalCustomerValue:
+            customer_total = customer.getTotal()
+            if customer_total < total_value:
                 total_value = totalCustomerValue
                 mostValuableCustomer = customer.name
 
