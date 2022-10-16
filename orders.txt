@@ -1,5 +1,6 @@
 Linda, P1, 2
-Linda, P3, 15
-Jack, Chocolate, 5
+Linda, P3, 1
+Jack, Chocolate, 5, P3, 900
 Zoran, Wine, 10, What a bargain!
-C2, COM1, 9, 2020-12-20
+C2, COM1, 1, 2020-12-20
+Ivan, P1, 10
