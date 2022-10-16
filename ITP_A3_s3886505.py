@@ -335,6 +335,8 @@ def menu(records):
             return menu(records)
         else:
             print("Bye! Thanks for using our service!")
+            writeFiles(records)
+
     elif action == 'mpp':
         product_name = records.mostPopularProduct()
         print("Our most popular product is ", product_name)
@@ -343,6 +345,7 @@ def menu(records):
             return menu(records)
         else:
             print("Bye! Thanks for using our service!")
+            writeFiles(records)
     elif action == "exit":
         print("Thanks for using our service!")
         writeFiles(records)
