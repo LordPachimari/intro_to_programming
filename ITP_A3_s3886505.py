@@ -1,7 +1,7 @@
 # Name: Thien Nguyen Vanovich
 # Student id: s3886505
 # Attempted PASS, CREDIT, DI, HD levels.
-# Submission 5
+# Submission 6
 
 # Storing opened files in the global list, so we can access them later when we write changes to the files
 files = []
@@ -306,7 +306,7 @@ def menu(records):
     print("To cange threshold for a wholesale customer type -- 'threshold'")
     print("To change replenish type -- 'replenish'")
     print("To view our most valuable customer type -- 'MVC'")
-    print("To view our most valuable product type -- 'MPP'")
+    print("To view our most popular product type -- 'MPP'")
     print("To exit the program type -- 'exit'")
     print('')
     action = input("Type your action... ").lower().strip()
