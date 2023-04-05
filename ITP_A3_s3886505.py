@@ -1,7 +1,4 @@
-# Name: Thien Nguyen Vanovich
-# Student id: s3886505
-# Attempted PASS, CREDIT, DI, HD levels.
-# Submission 6
+
 
 # Storing opened files in the global list, so we can access them later when we write changes to the files
 files = []
